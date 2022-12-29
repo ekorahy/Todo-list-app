@@ -1,6 +1,5 @@
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
-import 'package:firebase_auth/firebase_auth.dart' as firebase_auth;
 import 'package:todo_list_app/pages/SignInPage.dart';
 
 void main()async {
@@ -17,16 +16,6 @@ class MyApp extends StatefulWidget {
 }
 
 class _MyAppState extends State<MyApp> {
-  firebase_auth.FirebaseAuth firebaseAuth = firebase_auth.FirebaseAuth.instance;
-  
-  void signup()async {
-    try {
-      await firebaseAuth.createUserWithEmailAndPassword(email: "koradev2@gmail.com", password: "12345678");
-    } catch(e) {
-      print(e);
-    }
-  }
-  
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
