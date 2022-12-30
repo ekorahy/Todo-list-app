@@ -1,6 +1,9 @@
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
+import 'package:todo_list_app/Service/Auth_Service.dart';
+import 'package:todo_list_app/pages/HomePage.dart';
 import 'package:todo_list_app/pages/SignInPage.dart';
+import 'package:todo_list_app/pages/SignUpPage.dart';
 
 void main()async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -16,10 +19,29 @@ class MyApp extends StatefulWidget {
 }
 
 class _MyAppState extends State<MyApp> {
+
+  Widget currentPage = SignUpPage();
+  AuthClass authClass = AuthClass();
+
+  @override
+  void initState() {
+    super.initState();
+    checkLogin();
+  }
+
+  void checkLogin() async {
+    String? token = await authClass.getToken();
+    if(token != null) {
+      setState(() {
+        currentPage = HomePage();
+      });
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      home: SignInPage(),
+      home: currentPage,
     );
   }
 }
