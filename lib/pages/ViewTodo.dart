@@ -64,19 +64,39 @@ class _ViewTodoPageState extends State<ViewTodoPage> {
                               color: Colors.white,
                               size: 28),
                         ),
-                        IconButton(
-                          onPressed: () {
-                            setState(() {
-                              edit = !edit;
-                            });
-                          },
-                          icon: Icon(
-                              Icons.edit,
-                              color: edit
-                                  ? Colors.green
-                                  : Colors.white,
-                              size: 28),
-                        ),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            IconButton(
+                              onPressed: () {
+                                setState(() {
+                                  setState(() {
+                                    FirebaseFirestore.instance.collection("Todo").doc(widget.id).delete().then((value){
+                                      Navigator.pop(context);
+                                    });
+                                  });
+                                });
+                              },
+                              icon: Icon(
+                                  Icons.delete,
+                                  color: Colors.red,
+                                  size: 28),
+                            ),
+                            IconButton(
+                              onPressed: () {
+                                setState(() {
+                                  edit = !edit;
+                                });
+                              },
+                              icon: Icon(
+                                  Icons.edit,
+                                  color: edit
+                                      ? Colors.green
+                                      : Colors.white,
+                                  size: 28),
+                            ),
+                          ],
+                        )
                       ],
                     ),
                     Padding(
