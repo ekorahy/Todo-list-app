@@ -35,7 +35,7 @@ class _SignInPageState extends State<SignInPage> {
                       "Sign In",
                       style: TextStyle(
                           fontSize: 35,
-                          color: Colors.white,
+                          color: Color(0xff28FEAF),
                           fontWeight: FontWeight.bold
                       ),
                     ),
@@ -43,8 +43,6 @@ class _SignInPageState extends State<SignInPage> {
                     buttonItem("assets/google.svg", "Continue with Google", 25, () {
                       authClass.googleSignIn(context);
                     }),
-                    SizedBox(height: 15),
-                    buttonItem("assets/phone.svg", "Continue with Mobile", 25, () {}),
                     SizedBox(height: 15),
                     Text(
                       "Or",
@@ -66,7 +64,7 @@ class _SignInPageState extends State<SignInPage> {
                         Text(
                             "Don't have an account? ",
                             style: TextStyle(
-                              color: Colors.white,
+                              color: Color(0xff595A5C),
                               fontSize: 18,
                             )
                         ),
@@ -77,7 +75,7 @@ class _SignInPageState extends State<SignInPage> {
                           child: Text(
                             "Register",
                             style: TextStyle(
-                              color: Colors.white,
+                              color: Color(0xff28FEAF),
                               fontSize: 18,
                               fontWeight: FontWeight.bold,
                             )
@@ -86,14 +84,6 @@ class _SignInPageState extends State<SignInPage> {
                       ],
                     ),
                     SizedBox(height: 15),
-                    Text(
-                        "forgot Password ?",
-                        style: TextStyle(
-                          color: Colors.white,
-                          fontSize: 17,
-                          fontWeight: FontWeight.bold,
-                        )
-                    ),
                   ],
                 )
             )
@@ -161,7 +151,7 @@ class _SignInPageState extends State<SignInPage> {
               borderRadius: BorderRadius.circular(15),
               borderSide: BorderSide(
                 width: 1.5,
-                color: Colors.amber,
+                color: Color(0xff28FEAF),
               ),
             ),
             enabledBorder: OutlineInputBorder(
@@ -191,8 +181,10 @@ class _SignInPageState extends State<SignInPage> {
             circular = false;
           });
           Navigator.pushAndRemoveUntil(context, MaterialPageRoute(builder: (builder) => HomePage()), (route) => false);
+          final snackBar = SnackBar(content: Text("login successful"), backgroundColor: Colors.green);
+          ScaffoldMessenger.of(context).showSnackBar(snackBar);
         } catch(e) {
-          final snackBar = SnackBar(content: Text(e.toString()));
+          final snackBar = SnackBar(content: Text(e.toString()), backgroundColor: Colors.red);
           ScaffoldMessenger.of(context).showSnackBar(snackBar);
           setState(() {
             circular = false;
@@ -204,12 +196,7 @@ class _SignInPageState extends State<SignInPage> {
         height: 60,
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(20),
-          gradient: LinearGradient(
-              colors: [
-                Color(0xfffd746c),
-                Color(0xffff9068),
-                Color(0xfffd746c)]
-          ),
+          color: Color(0xff28FEAF),
         ),
           child: Center(
               child: circular
@@ -217,7 +204,7 @@ class _SignInPageState extends State<SignInPage> {
                   :Text(
                   "Sign In",
                   style: TextStyle(
-                    color: Colors.white,
+                    color: Colors.black,
                     fontSize: 20,
                     fontWeight: FontWeight.bold,
                   )

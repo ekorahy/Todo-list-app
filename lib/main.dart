@@ -21,7 +21,7 @@ class MyApp extends StatefulWidget {
 
 class _MyAppState extends State<MyApp> {
 
-  Widget currentPage = SignUpPage();
+  Widget currentPage = SignInPage();
   AuthClass authClass = AuthClass();
 
   @override
@@ -42,7 +42,7 @@ class _MyAppState extends State<MyApp> {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      home: HomePage(),
+      home: currentPage,
     );
   }
 }

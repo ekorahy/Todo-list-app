@@ -16,9 +16,11 @@ class _ViewTodoPageState extends State<ViewTodoPage> {
 
   TextEditingController? _titleController;
   TextEditingController? _descController;
-  String? type = "";
   String? category = "";
+  TimeOfDay _timeOfDay = TimeOfDay.now();
+  String? time;
   bool edit = false;
+  bool? checklist;
 
   @override
   void initState() {
@@ -31,8 +33,9 @@ class _ViewTodoPageState extends State<ViewTodoPage> {
     : widget.document?["description"];
     _titleController = TextEditingController(text: title);
     _descController = TextEditingController(text: description);
-    type = widget.document?["type"];
+    time = widget.document?["time"];
     category = widget.document?["category"];
+    checklist = widget.document?["checklist"];
   }
 
   @override
@@ -42,10 +45,7 @@ class _ViewTodoPageState extends State<ViewTodoPage> {
             height: MediaQuery.of(context).size.height,
             width: MediaQuery.of(context).size.width,
             decoration: BoxDecoration(
-              gradient: LinearGradient(colors: [
-                Color(0xff1d1e26),
-                Color(0xff252041),
-              ]),
+              color: Colors.black
             ),
             child: SingleChildScrollView(
                 child: Column(
@@ -73,6 +73,8 @@ class _ViewTodoPageState extends State<ViewTodoPage> {
                                   setState(() {
                                     FirebaseFirestore.instance.collection("Todo").doc(widget.id).delete().then((value){
                                       Navigator.pop(context);
+                                      final snackBar = SnackBar(content: Text("delete todo successful"), backgroundColor: Colors.green);
+                                      ScaffoldMessenger.of(context).showSnackBar(snackBar);
                                     });
                                   });
                                 });
@@ -91,7 +93,7 @@ class _ViewTodoPageState extends State<ViewTodoPage> {
                               icon: Icon(
                                   Icons.edit,
                                   color: edit
-                                      ? Colors.green
+                                      ? Colors.amber
                                       : Colors.white,
                                   size: 28),
                             ),
@@ -104,20 +106,68 @@ class _ViewTodoPageState extends State<ViewTodoPage> {
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            Text(
-                              edit
-                              ?"Editing"
-                              :"View",
-                              style: TextStyle(
-                                fontSize: 33,
-                                color: Colors.white,
-                                fontWeight: FontWeight.bold,
-                                letterSpacing: 4,
-                              ),
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                Text(
+                                  edit
+                                      ?"Edit"
+                                      :"Detail",
+                                  style: TextStyle(
+                                    fontSize: 33,
+                                    color: edit
+                                        ? Colors.amber
+                                        : Color(0xff28FEAF),
+                                    fontWeight: FontWeight.bold,
+                                    letterSpacing: 4,
+                                  ),
+                                ),
+                                Row(
+                                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                  children: [
+                                    Text(
+                                      checklist == false
+                                          ?"undone"
+                                          :"done",
+                                      style: TextStyle(
+                                        fontSize: 20,
+                                        color: edit
+                                            ? Colors.amber
+                                            : Color(0xff28FEAF),
+                                        fontWeight: FontWeight.bold,
+                                      ),
+                                    ),
+                                    edit
+                                    ? Theme(
+                                        child: Transform.scale(
+                                          scale: 1.5,
+                                          child: Checkbox(
+                                            shape: RoundedRectangleBorder(
+                                                borderRadius: BorderRadius.circular(5)
+                                            ),
+                                            activeColor: Colors.amber,
+                                            checkColor: Colors.black,
+                                            value: checklist,
+                                            onChanged: (bool? value) {
+                                              setState(() {
+                                                checklist = value;
+                                              });
+                                            },
+                                          ),
+                                        ),
+                                        data: ThemeData(
+                                          primarySwatch: Colors.blue,
+                                          unselectedWidgetColor: Color(0xff5e616a),
+                                        )
+                                    )
+                                    : Container()
+                                  ],
+                                )
+                              ],
                             ),
                             SizedBox(height: 8),
                             Text(
-                              "Your Todo",
+                              "Todo",
                               style: TextStyle(
                                 fontSize: 33,
                                 color: Colors.white,
@@ -130,36 +180,64 @@ class _ViewTodoPageState extends State<ViewTodoPage> {
                             SizedBox(height: 12),
                             title(),
                             SizedBox(height: 30),
-                            label("Task Type"),
+                            label("Category"),
+                            SizedBox(height: 12),
+                            Wrap(
+                              runSpacing: 10,
+                              children: [
+                                categorySelect("1. Important & urgent", 0xff595A5C),
+                                SizedBox(width: 20),
+                                categorySelect("2. Important but not urgent", 0xff595A5C),
+                                SizedBox(width: 20),
+                                categorySelect("3. Urgent but not important", 0xff595A5C),
+                                SizedBox(width: 20),
+                                categorySelect("4. Not urgent & not important", 0xff595A5C),
+                              ],
+                            ),
+                            SizedBox(height: 30),
+                            label("Time"),
                             SizedBox(height: 12),
                             Row(
+                              mainAxisAlignment: MainAxisAlignment.start,
                               children: [
-                                typeSelect("Important", 0xff2664fa),
-                                SizedBox(width: 20),
-                                typeSelect("Planned", 0xff2bc8d9),
+                                Container(
+                                  margin: EdgeInsets.only(right: 20),
+                                  child: Text(
+                                    _timeOfDay == TimeOfDay.now()
+                                        ? widget.document!["time"]
+                                      : _timeOfDay.hour.toString().padLeft(2, '0') + ':' +
+                                        _timeOfDay.minute.toString().padLeft(2, '0'),
+                                    style: TextStyle(
+                                      fontSize: 20,
+                                      color: !edit
+                                          ? Color(0xff28FEAF)
+                                          : Colors.amber,
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                  ),
+                                ),
+                                const SizedBox(height: 10),
+                                edit ? MaterialButton(
+                                    height: 50,
+                                    minWidth: 50,
+                                    color: Colors.amber,
+                                    shape:  RoundedRectangleBorder(borderRadius: BorderRadius.circular(10.0),),
+                                    child: Icon(
+                                      Icons.alarm,
+                                      size: 32,
+                                      color: Colors.black,
+                                    ),
+                                    onPressed: () {
+                                      selectTime();
+                                    }
+                                )
+                                : Container(),
                               ],
                             ),
                             SizedBox(height: 30),
                             label("Description"),
                             SizedBox(height: 12),
                             description(),
-                            SizedBox(height: 30),
-                            label("Category"),
-                            SizedBox(height: 12),
-                            Wrap(
-                              runSpacing: 10,
-                              children: [
-                                categorySelect("Food", 0xffff6d6e),
-                                SizedBox(width: 20),
-                                categorySelect("WorkOut", 0xfff29732),
-                                SizedBox(width: 20),
-                                categorySelect("Work", 0xff6557ff),
-                                SizedBox(width: 20),
-                                categorySelect("Design", 0xff234ebd),
-                                SizedBox(width: 20),
-                                categorySelect("Run", 0xff2bc8d9),
-                              ],
-                            ),
                             SizedBox(height: 50),
                             edit ? button() : Container(),
                             SizedBox(height: 30)
@@ -190,7 +268,9 @@ class _ViewTodoPageState extends State<ViewTodoPage> {
         ),
         decoration: InputDecoration(
           border: InputBorder.none,
-          hintText: "Task Title",
+          hintText: edit
+            ? "Enter Title"
+            : "",
           hintStyle: TextStyle(
             color: Colors.grey,
             fontSize: 17,
@@ -216,33 +296,6 @@ class _ViewTodoPageState extends State<ViewTodoPage> {
     );
   }
 
-  Widget typeSelect(String label, int color) {
-    return InkWell(
-      onTap: edit
-        ?() {
-        setState(() {
-          type = label;
-        });
-      }
-      : null,
-      child: Chip(
-        backgroundColor: type == label?Colors.white:Color(color),
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(10),
-        ),
-        label: Text(
-          label,
-          style: TextStyle(
-            color: type == label?Colors.black:Colors.white,
-            fontSize: 15,
-            fontWeight: FontWeight.w600,
-          ),
-        ),
-        labelPadding: EdgeInsets.symmetric(horizontal: 17, vertical: 3.8),
-      ),
-    );
-  }
-
   Widget categorySelect(String label, int color) {
     return InkWell(
       onTap: edit
@@ -253,7 +306,12 @@ class _ViewTodoPageState extends State<ViewTodoPage> {
       }
       : null,
       child: Chip(
-        backgroundColor: category == label?Colors.white:Color(color),
+        backgroundColor: !edit ? category == label
+            ? Color(0xff28FEAF)
+            : Color(color)
+        : category == label
+            ? Colors.amber
+            : Color(color),
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(10),
         ),
@@ -288,7 +346,9 @@ class _ViewTodoPageState extends State<ViewTodoPage> {
         maxLines: null,
         decoration: InputDecoration(
           border: InputBorder.none,
-          hintText: "Task Title",
+          hintText: edit
+              ? "Enter Description"
+              : "",
           hintStyle: TextStyle(
             color: Colors.grey,
             fontSize: 17,
@@ -307,29 +367,28 @@ class _ViewTodoPageState extends State<ViewTodoPage> {
       onTap: () {
         FirebaseFirestore.instance.collection("Todo").doc(widget.id).update({
           "title": _titleController?.text,
-          "type": type,
-          "description": _descController?.text,
+          "checklist": checklist,
           "category": category,
+          "time": _timeOfDay.hour.toString().padLeft(2, '0') + ':' +
+              _timeOfDay.minute.toString().padLeft(2, '0'),
+          "description": _descController?.text,
         });
         Navigator.pop(context);
+        final snackBar = SnackBar(content: Text("update todo successful"), backgroundColor: Colors.green);
+        ScaffoldMessenger.of(context).showSnackBar(snackBar);
       },
       child: Container(
           height: 56,
           width: MediaQuery.of(context).size.width,
           decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(20),
-            gradient: LinearGradient(
-              colors: [
-                Color(0xff8a32f1),
-                Color(0xffad32f9),
-              ],
-            ),
+            color: Colors.amber,
           ),
           child: Center(
               child: Text(
                   "Update Todo",
                   style: TextStyle(
-                    color: Colors.white,
+                    color: Colors.black,
                     fontSize: 18,
                     fontWeight: FontWeight.bold,
                   )
@@ -337,5 +396,17 @@ class _ViewTodoPageState extends State<ViewTodoPage> {
           )
       ),
     );
+  }
+
+  Future<void> selectTime() async {
+    TimeOfDay ? _picked = await showTimePicker(
+        context: context,
+        initialTime: _timeOfDay
+    );
+    if(_picked != null){
+      setState(() {
+        _timeOfDay = _picked;
+      });
+    }
   }
 }

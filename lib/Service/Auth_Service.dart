@@ -32,6 +32,8 @@ class AuthClass {
           UserCredential userCredential = await auth.signInWithCredential(credential);
           storeTokenAndData(userCredential);
           Navigator.pushAndRemoveUntil(context, MaterialPageRoute(builder: (builder) => HomePage()), (route) => false);
+          final snackBar = SnackBar(content: Text("login successful"), backgroundColor: Colors.green);
+          ScaffoldMessenger.of(context).showSnackBar(snackBar);
         } catch(e) {
           final snackBar = SnackBar(content: Text(e.toString()));
           ScaffoldMessenger.of(context).showSnackBar(snackBar);

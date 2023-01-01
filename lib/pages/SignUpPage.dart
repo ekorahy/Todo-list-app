@@ -34,26 +34,11 @@ class _SignUpPageState extends State<SignUpPage> {
                 "Sign Up",
                 style: TextStyle(
                   fontSize: 35,
-                  color: Colors.white,
+                  color: Color(0xff28FEAF),
                   fontWeight: FontWeight.bold
                 ),
               ),
               SizedBox(height: 20),
-              buttonItem("assets/google.svg", "Continue with Google", 25,
-                () async {
-                  await authClass.googleSignIn(context);
-              }),
-              SizedBox(height: 15),
-              buttonItem("assets/phone.svg", "Continue with Mobile", 25, () {}),
-              SizedBox(height: 15),
-              Text(
-                "Or",
-                style: TextStyle(
-                  color: Colors.white,
-                  fontSize: 18,
-                ),
-              ),
-              SizedBox(height: 15),
               textItem("Email ...", _emailController, false),
               SizedBox(height: 15),
               textItem("Password ...", _passwordController, true),
@@ -66,7 +51,7 @@ class _SignUpPageState extends State<SignUpPage> {
                   Text(
                     "Already have an account? ",
                     style: TextStyle(
-                      color: Colors.white,
+                      color: Color(0xff595A5C),
                       fontSize: 18,
                     )
                   ),
@@ -77,7 +62,7 @@ class _SignUpPageState extends State<SignUpPage> {
                     child: Text(
                         "Login",
                         style: TextStyle(
-                          color: Colors.white,
+                          color: Color(0xff28FEAF),
                           fontSize: 18,
                           fontWeight: FontWeight.bold,
                         )
@@ -89,45 +74,6 @@ class _SignUpPageState extends State<SignUpPage> {
           )
         )
       )
-    );
-  }
-
-  Widget buttonItem(String imagePath, String buttonName, double size, VoidCallback onTap) {
-    return InkWell(
-      onTap: onTap,
-      child: Container(
-          width: MediaQuery.of(context).size.width - 60,
-          height: 60,
-          child: Card(
-              color: Colors.black,
-              elevation: 8,
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(15),
-                side: BorderSide(
-                  width: 1,
-                  color: Colors.grey,
-                ),
-              ),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  SvgPicture.asset(
-                    imagePath,
-                    height: size,
-                    width: size,
-                  ),
-                  SizedBox(width: 15),
-                  Text(
-                    buttonName,
-                    style: TextStyle(
-                      color: Colors.white,
-                      fontSize: 17,
-                    ),
-                  ),
-                ],
-              )
-          )
-      ),
     );
   }
 
@@ -152,7 +98,7 @@ class _SignUpPageState extends State<SignUpPage> {
             borderRadius: BorderRadius.circular(15),
             borderSide: BorderSide(
               width: 1.5,
-              color: Colors.amber,
+              color: Color(0xff28FEAF),
             ),
           ),
           enabledBorder: OutlineInputBorder(
@@ -183,8 +129,10 @@ class _SignUpPageState extends State<SignUpPage> {
            circular = false;
          });
          Navigator.pushAndRemoveUntil(context, MaterialPageRoute(builder: (builder) => SignInPage()), (route) => false);
+         final snackBar = SnackBar(content: Text("register account successful"), backgroundColor: Colors.green);
+         ScaffoldMessenger.of(context).showSnackBar(snackBar);
        } catch(e) {
-         final snackBar = SnackBar(content: Text(e.toString()));
+         final snackBar = SnackBar(content: Text(e.toString()), backgroundColor: Colors.red);
          ScaffoldMessenger.of(context).showSnackBar(snackBar);
          setState(() {
            circular = false;
@@ -196,12 +144,7 @@ class _SignUpPageState extends State<SignUpPage> {
           height: 60,
           decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(20),
-            gradient: LinearGradient(
-                colors: [
-                  Color(0xfffd746c),
-                  Color(0xffff9068),
-                  Color(0xfffd746c)]
-            ),
+            color: Color(0xff28FEAF),
           ),
           child: Center(
               child: circular
@@ -209,7 +152,7 @@ class _SignUpPageState extends State<SignUpPage> {
                   :Text(
                   "Sign Up",
                   style: TextStyle(
-                    color: Colors.white,
+                    color: Colors.black,
                     fontSize: 20,
                     fontWeight: FontWeight.bold,
                   )

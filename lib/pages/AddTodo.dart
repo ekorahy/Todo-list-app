@@ -13,8 +13,10 @@ class _AddTodoPageState extends State<AddTodoPage> {
 
   TextEditingController _titleController = TextEditingController();
   TextEditingController _descController = TextEditingController();
-  String? type = "";
   String? category = "";
+  TimeOfDay _timeOfDay = TimeOfDay.now();
+  String? time;
+  bool? checklist = false;
 
   @override
   Widget build(BuildContext context) {
@@ -23,10 +25,7 @@ class _AddTodoPageState extends State<AddTodoPage> {
           height: MediaQuery.of(context).size.height,
           width: MediaQuery.of(context).size.width,
           decoration: BoxDecoration(
-            gradient: LinearGradient(colors: [
-              Color(0xff1d1e26),
-              Color(0xff252041),
-            ]),
+            color: Colors.black,
           ),
           child: SingleChildScrollView(
             child: Column(
@@ -51,7 +50,7 @@ class _AddTodoPageState extends State<AddTodoPage> {
                         "Create",
                         style: TextStyle(
                           fontSize: 33,
-                          color: Colors.white,
+                          color: Color(0xff28FEAF),
                           fontWeight: FontWeight.bold,
                           letterSpacing: 4,
                         ),
@@ -67,40 +66,64 @@ class _AddTodoPageState extends State<AddTodoPage> {
                         ),
                       ),
                       SizedBox(height: 25),
-                      label("Task Title"),
+                      label("Title"),
                       SizedBox(height: 12),
                       title(),
-                      SizedBox(height: 30),
-                      label("Task Type"),
-                      SizedBox(height: 12),
-                      Row(
-                        children: [
-                          typeSelect("Important", 0xff2664fa),
-                          SizedBox(width: 20),
-                          typeSelect("Planned", 0xff2bc8d9),
-                        ],
-                      ),
-                      SizedBox(height: 30),
-                      label("Description"),
-                      SizedBox(height: 12),
-                      description(),
                       SizedBox(height: 30),
                       label("Category"),
                       SizedBox(height: 12),
                       Wrap(
                         runSpacing: 10,
                         children: [
-                          categorySelect("Food", 0xffff6d6e),
+                          categorySelect("1. Important & urgent", 0xff595A5C),
                           SizedBox(width: 20),
-                          categorySelect("WorkOut", 0xfff29732),
+                          categorySelect("2. Important but not urgent", 0xff595A5C),
                           SizedBox(width: 20),
-                          categorySelect("Work", 0xff6557ff),
+                          categorySelect("3. Urgent but not important", 0xff595A5C),
                           SizedBox(width: 20),
-                          categorySelect("Design", 0xff234ebd),
-                          SizedBox(width: 20),
-                          categorySelect("Run", 0xff2bc8d9),
+                          categorySelect("4. Not urgent & not important", 0xff595A5C),
                         ],
                       ),
+                      SizedBox(height: 30),
+                      label("Time"),
+                      SizedBox(height: 12),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.start,
+                        children: [
+                          Container(
+                            margin: EdgeInsets.only(right: 20),
+                            child: Text(
+                              time = _timeOfDay.hour.toString().padLeft(2, '0') + ':' +
+                                  _timeOfDay.minute.toString().padLeft(2, '0'),
+                              style: const TextStyle(
+                                fontSize: 20,
+                                color: Color(0xff28FEAF),
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                          ),
+                          const SizedBox(height: 10),
+                          MaterialButton(
+                            height: 50,
+                            minWidth: 50,
+                            color: Color(0xff28FEAF),
+                            shape:  RoundedRectangleBorder(borderRadius: BorderRadius.circular(10.0),),
+                            child: Icon(
+                              Icons.alarm,
+                              size: 32,
+                              color: Colors.black,
+                            ),
+                              onPressed: () {
+                                selectTime();
+                              }
+                          ),
+                        ],
+                      ),
+                      SizedBox(height: 12),
+                      SizedBox(height: 30),
+                      label("Description"),
+                      SizedBox(height: 12),
+                      description(),
                       SizedBox(height: 50),
                       button(),
                       SizedBox(height: 30)
@@ -130,7 +153,7 @@ class _AddTodoPageState extends State<AddTodoPage> {
         ),
         decoration: InputDecoration(
           border: InputBorder.none,
-          hintText: "Task Title",
+          hintText: "Enter Title",
           hintStyle: TextStyle(
             color: Colors.grey,
             fontSize: 17,
@@ -156,31 +179,6 @@ class _AddTodoPageState extends State<AddTodoPage> {
     );
   }
 
-  Widget typeSelect(String label, int color) {
-    return InkWell(
-      onTap: () {
-        setState(() {
-          type = label;
-        });
-      },
-      child: Chip(
-        backgroundColor: type == label?Colors.white:Color(color),
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(10),
-        ),
-        label: Text(
-          label,
-          style: TextStyle(
-            color: type == label?Colors.black:Colors.white,
-            fontSize: 15,
-            fontWeight: FontWeight.w600,
-          ),
-        ),
-        labelPadding: EdgeInsets.symmetric(horizontal: 17, vertical: 3.8),
-      ),
-    );
-  }
-
   Widget categorySelect(String label, int color) {
     return InkWell(
       onTap: () {
@@ -189,14 +187,18 @@ class _AddTodoPageState extends State<AddTodoPage> {
         });
       },
       child: Chip(
-        backgroundColor: category == label?Colors.white:Color(color),
+        backgroundColor: category == label
+            ? Color(0xff28FEAF)
+            : Color(color),
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(10),
         ),
         label: Text(
           label,
           style: TextStyle(
-            color: category == label?Colors.black:Colors.white,
+            color: category == label
+                ? Colors.black
+                : Colors.white,
             fontSize: 15,
             fontWeight: FontWeight.w600,
           ),
@@ -223,7 +225,7 @@ class _AddTodoPageState extends State<AddTodoPage> {
         maxLines: null,
         decoration: InputDecoration(
           border: InputBorder.none,
-          hintText: "Task Title",
+          hintText: "Enter Description",
           hintStyle: TextStyle(
             color: Colors.grey,
             fontSize: 17,
@@ -240,31 +242,31 @@ class _AddTodoPageState extends State<AddTodoPage> {
   Widget button() {
     return InkWell(
       onTap: () {
+        time = _timeOfDay.hour.toString().padLeft(2, '0') + ':' +
+            _timeOfDay.minute.toString().padLeft(2, '0');
         FirebaseFirestore.instance.collection("Todo").add({
           "title": _titleController.text,
-          "type": type,
-          "description": _descController.text,
           "category": category,
+          "checklist": checklist,
+          "time": time,
+          "description": _descController.text,
         });
         Navigator.pop(context);
+        final snackBar = SnackBar(content: Text("add new todo successful"), backgroundColor: Colors.green);
+        ScaffoldMessenger.of(context).showSnackBar(snackBar);
       },
       child: Container(
         height: 56,
         width: MediaQuery.of(context).size.width,
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(20),
-          gradient: LinearGradient(
-            colors: [
-              Color(0xff8a32f1),
-              Color(0xffad32f9),
-            ],
-          ),
+          color: Color(0xff28FEAF),
         ),
         child: Center(
             child: Text(
                 "Add Todo",
                 style: TextStyle(
-                  color: Colors.white,
+                  color: Colors.black,
                   fontSize: 18,
                   fontWeight: FontWeight.bold,
                 )
@@ -272,5 +274,17 @@ class _AddTodoPageState extends State<AddTodoPage> {
         )
       ),
     );
+  }
+
+  Future<void> selectTime() async {
+    TimeOfDay ? _picked = await showTimePicker(
+        context: context,
+        initialTime: _timeOfDay
+    );
+    if(_picked != null){
+      setState(() {
+        _timeOfDay = _picked;
+      });
+    }
   }
 }

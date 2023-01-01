@@ -4,19 +4,23 @@ class TodoCard extends StatelessWidget {
   const TodoCard({
     Key? key,
     this.title,
-    this.iconData,
-    this.iconColor,
+    this.category,
+    this.textColor,
     this.time,
     this.check,
-    this.iconBgColor,
+    this.bgColor,
+    this.onChangeCheckValue,
+    this.index
   }) : super(key: key);
 
   final String? title;
-  final IconData? iconData;
-  final Color? iconColor;
+  final String? category;
+  final Color? textColor;
   final String? time;
   final bool? check;
-  final Color? iconBgColor;
+  final Color? bgColor;
+  final Function? onChangeCheckValue;
+  final int? index;
 
   @override
   Widget build(BuildContext context) {
@@ -34,7 +38,9 @@ class TodoCard extends StatelessWidget {
                 activeColor: Color(0xff6cf8a9),
                 checkColor: Color(0xff0e3e26),
                 value: check,
-                onChanged: (bool? value) {},
+                onChanged: (bool? change) {
+                  onChangeCheckValue!();
+                },
               ),
             ),
             data: ThemeData(
@@ -45,46 +51,58 @@ class TodoCard extends StatelessWidget {
 
           Expanded(
             child: Container(
-              height: 75,
               width: MediaQuery.of(context).size.width,
               child: Card(
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(12),
                 ),
                 color: Color(0xff2a2e3d),
-                child: Row(
-                  children: [
-                    SizedBox(width: 15),
-                    Container(
-                      height: 33,
-                      width: 36,
-                      decoration: BoxDecoration(
-                        color: iconBgColor,
-                        borderRadius: BorderRadius.circular(8),
-                      ),
-                      child: Icon(iconData, color: iconColor),
-                    ),
-                    SizedBox(width: 20),
-                    Expanded(
-                      child: Text(
-                        title.toString(),
-                        style: TextStyle(
-                          fontSize: 18,
-                          letterSpacing: 1,
-                          fontWeight: FontWeight.w500,
-                          color: Colors.white,
+                child: Padding(
+                  padding: EdgeInsets.all(20),
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Container(
+                        padding: EdgeInsets.all(6),
+                        decoration: BoxDecoration(
+                          color: bgColor,
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                        child: Text(
+                          category!,
+                          style: TextStyle(
+                            color: textColor,
+                            fontWeight: FontWeight.w600,
+                          ),
                         ),
                       ),
-                    ),
-                    Text(
-                      time.toString(),
-                      style: TextStyle(
-                        fontSize: 15,
-                        color: Colors.white,
+                      SizedBox(height: 12),
+                      Row(
+                        children: [
+                          Expanded(
+                            child: Text(
+                              title.toString(),
+                              style: TextStyle(
+                                fontSize: 18,
+                                letterSpacing: 1,
+                                fontWeight: FontWeight.w500,
+                                color: Colors.white,
+                              ),
+                            ),
+                          ),
+                          Text(
+                            time.toString(),
+                            style: TextStyle(
+                              fontSize: 20,
+                              color: Colors.white,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                        ],
                       ),
-                    ),
-                    SizedBox(width: 20),
-                  ],
+                    ],
+                  ),
                 )
               ),
             ),
