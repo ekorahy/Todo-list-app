@@ -1,10 +1,8 @@
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:todo_list_app/Service/Auth_Service.dart';
-import 'package:todo_list_app/pages/AddTodo.dart';
 import 'package:todo_list_app/pages/HomePage.dart';
 import 'package:todo_list_app/pages/SignInPage.dart';
-import 'package:todo_list_app/pages/SignUpPage.dart';
 
 void main()async {
   WidgetsFlutterBinding.ensureInitialized();
