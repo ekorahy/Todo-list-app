@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:todo_list_app/CustomWidget/AuthTextBox.dart';
 import 'package:todo_list_app/Service/Auth_Service.dart';
 import 'package:todo_list_app/pages/HomePage.dart';
 import 'package:todo_list_app/pages/SignUpPage.dart';
@@ -15,8 +16,8 @@ class SignInPage extends StatefulWidget {
 class _SignInPageState extends State<SignInPage> {
   firebase_auth.FirebaseAuth firebaseAuth = firebase_auth.FirebaseAuth.instance;
 
-  TextEditingController _emailController = TextEditingController();
-  TextEditingController _passwordController = TextEditingController();
+  final TextEditingController _emailController = TextEditingController();
+  final TextEditingController _passwordController = TextEditingController();
   bool circular = false;
   AuthClass authClass = AuthClass();
 
@@ -31,7 +32,7 @@ class _SignInPageState extends State<SignInPage> {
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    Text(
+                    const Text(
                       "Sign In",
                       style: TextStyle(
                           fontSize: 35,
@@ -39,29 +40,29 @@ class _SignInPageState extends State<SignInPage> {
                           fontWeight: FontWeight.bold
                       ),
                     ),
-                    SizedBox(height: 20),
-                    buttonItem("assets/google.svg", "Continue with Google", 25, () {
+                    const SizedBox(height: 20),
+                    buttonLoginWithGoogle("assets/google.svg", "Continue with Google", 25, () {
                       authClass.googleSignIn(context);
                     }),
-                    SizedBox(height: 15),
-                    Text(
+                    const SizedBox(height: 15),
+                    const Text(
                       "Or",
                       style: TextStyle(
                         color: Colors.white,
                         fontSize: 18,
                       ),
                     ),
-                    SizedBox(height: 15),
-                    textItem("Email ...", _emailController, false),
-                    SizedBox(height: 15),
-                    textItem("Password ...", _passwordController, true),
-                    SizedBox(height: 30),
-                    colorButton(),
-                    SizedBox(height: 30),
+                    const SizedBox(height: 15),
+                    AuthTextBox(label: "Email ...", controller: _emailController, obscureText: false),
+                    const SizedBox(height: 15),
+                    AuthTextBox(label: "Password ...", controller: _passwordController, obscureText: true),
+                    const SizedBox(height: 30),
+                    buttonLogin(),
+                    const SizedBox(height: 30),
                     Row(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        Text(
+                        const Text(
                             "Don't have an account? ",
                             style: TextStyle(
                               color: Color(0xff595A5C),
@@ -70,9 +71,9 @@ class _SignInPageState extends State<SignInPage> {
                         ),
                         InkWell(
                           onTap: () {
-                            Navigator.pushAndRemoveUntil(context, MaterialPageRoute(builder: (builder) => SignUpPage()), (route) => false);
+                            Navigator.pushAndRemoveUntil(context, MaterialPageRoute(builder: (builder) => const SignUpPage()), (route) => false);
                           },
-                          child: Text(
+                          child: const Text(
                             "Register",
                             style: TextStyle(
                               color: Color(0xff28FEAF),
@@ -83,7 +84,7 @@ class _SignInPageState extends State<SignInPage> {
                         )
                       ],
                     ),
-                    SizedBox(height: 15),
+                    const SizedBox(height: 15),
                   ],
                 )
             )
@@ -91,10 +92,10 @@ class _SignInPageState extends State<SignInPage> {
     );
   }
 
-  Widget buttonItem(String imagePath, String buttonName, double size, VoidCallback onTap) {
+  Widget buttonLoginWithGoogle(String imagePath, String buttonName, double size, VoidCallback onTap) {
     return InkWell(
       onTap: onTap,
-      child: Container(
+      child: SizedBox(
           width: MediaQuery.of(context).size.width - 60,
           height: 60,
           child: Card(
@@ -102,7 +103,7 @@ class _SignInPageState extends State<SignInPage> {
               elevation: 8,
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(15),
-                side: BorderSide(
+                side: const BorderSide(
                   width: 1,
                   color: Colors.grey,
                 ),
@@ -115,10 +116,10 @@ class _SignInPageState extends State<SignInPage> {
                     height: size,
                     width: size,
                   ),
-                  SizedBox(width: 15),
+                  const SizedBox(width: 15),
                   Text(
                     buttonName,
-                    style: TextStyle(
+                    style: const TextStyle(
                       color: Colors.white,
                       fontSize: 17,
                     ),
@@ -130,43 +131,7 @@ class _SignInPageState extends State<SignInPage> {
     );
   }
 
-  Widget textItem(String labelText, TextEditingController controller, bool obscureText) {
-    return Container(
-        width: MediaQuery.of(context).size.width - 70,
-        height: 55,
-        child: TextFormField(
-          controller: controller,
-          obscureText: obscureText,
-          style: TextStyle(
-            fontSize: 17,
-            color: Colors.white,
-          ),
-          decoration: InputDecoration(
-            labelText: labelText,
-            labelStyle: TextStyle(
-              fontSize: 17,
-              color: Colors.white,
-            ),
-            focusedBorder: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(15),
-              borderSide: BorderSide(
-                width: 1.5,
-                color: Color(0xff28FEAF),
-              ),
-            ),
-            enabledBorder: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(15),
-              borderSide: BorderSide(
-                width: 1,
-                color: Colors.grey,
-              ),
-            ),
-          ),
-        )
-    );
-  }
-
-  Widget colorButton() {
+  Widget buttonLogin() {
     return InkWell(
       onTap: () async {
         setState(() {
@@ -180,8 +145,9 @@ class _SignInPageState extends State<SignInPage> {
           setState(() {
             circular = false;
           });
-          Navigator.pushAndRemoveUntil(context, MaterialPageRoute(builder: (builder) => HomePage()), (route) => false);
-          final snackBar = SnackBar(content: Text("login successful"), backgroundColor: Colors.green);
+          authClass.storeTokenAndData(userCredential);
+          Navigator.pushAndRemoveUntil(context, MaterialPageRoute(builder: (builder) => const HomePage()), (route) => false);
+          const snackBar = SnackBar(content: Text("login successful"), backgroundColor: Colors.green);
           ScaffoldMessenger.of(context).showSnackBar(snackBar);
         } catch(e) {
           final snackBar = SnackBar(content: Text(e.toString()), backgroundColor: Colors.red);
@@ -196,12 +162,12 @@ class _SignInPageState extends State<SignInPage> {
         height: 60,
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(20),
-          color: Color(0xff28FEAF),
+          color: const Color(0xff28FEAF),
         ),
           child: Center(
               child: circular
-                  ?CircularProgressIndicator()
-                  :Text(
+                  ?const CircularProgressIndicator()
+                  :const Text(
                   "Sign In",
                   style: TextStyle(
                     color: Colors.black,

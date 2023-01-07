@@ -19,7 +19,7 @@ class _AboutPageState extends State<AboutPage> {
           onPressed: () {
             Navigator.pop(context);
           },
-          icon: Icon(
+          icon: const Icon(
               CupertinoIcons.arrow_left,
               color: Colors.white,
               size: 28),
@@ -29,9 +29,9 @@ class _AboutPageState extends State<AboutPage> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.center,
             mainAxisAlignment: MainAxisAlignment.center,
-            children: [
+            children: const [
               Text(
-                "About Author",
+                "About Developer",
                 style: TextStyle(
                   color: Color(0xff28FEAF),
                   fontWeight: FontWeight.bold,

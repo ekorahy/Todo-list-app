@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:todo_list_app/CustomWidget/LabelTextBox.dart';
 
 class ViewTodoPage extends StatefulWidget {
   const ViewTodoPage({Key? key, this.document, this.id}) : super(key: key);
@@ -25,12 +26,8 @@ class _ViewTodoPageState extends State<ViewTodoPage> {
   @override
   void initState() {
     super.initState();
-    String title = widget.document?["title"] == null
-    ? "Empty Title"
-    : widget.document?["title"];
-    String description = widget.document?["description"] == null
-    ? "Empty Description"
-    : widget.document?["description"];
+    String title = widget.document?["title"] ?? "Empty Title";
+    String description = widget.document?["description"] ?? "Empty Description";
     _titleController = TextEditingController(text: title);
     _descController = TextEditingController(text: description);
     time = widget.document?["time"];
@@ -44,14 +41,14 @@ class _ViewTodoPageState extends State<ViewTodoPage> {
         body: Container(
             height: MediaQuery.of(context).size.height,
             width: MediaQuery.of(context).size.width,
-            decoration: BoxDecoration(
+            decoration: const BoxDecoration(
               color: Colors.black
             ),
             child: SingleChildScrollView(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    SizedBox(height: 30),
+                    const SizedBox(height: 30),
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
@@ -59,7 +56,7 @@ class _ViewTodoPageState extends State<ViewTodoPage> {
                           onPressed: () {
                             Navigator.pop(context);
                           },
-                          icon: Icon(
+                          icon: const Icon(
                               CupertinoIcons.arrow_left,
                               color: Colors.white,
                               size: 28),
@@ -73,13 +70,13 @@ class _ViewTodoPageState extends State<ViewTodoPage> {
                                   setState(() {
                                     FirebaseFirestore.instance.collection("Todo").doc(widget.id).delete().then((value){
                                       Navigator.pop(context);
-                                      final snackBar = SnackBar(content: Text("delete todo successful"), backgroundColor: Colors.green);
+                                      const snackBar = SnackBar(content: Text("delete todo successful"), backgroundColor: Colors.green);
                                       ScaffoldMessenger.of(context).showSnackBar(snackBar);
                                     });
                                   });
                                 });
                               },
-                              icon: Icon(
+                              icon: const Icon(
                                   Icons.delete,
                                   color: Colors.red,
                                   size: 28),
@@ -117,7 +114,7 @@ class _ViewTodoPageState extends State<ViewTodoPage> {
                                     fontSize: 33,
                                     color: edit
                                         ? Colors.amber
-                                        : Color(0xff28FEAF),
+                                        : const Color(0xff28FEAF),
                                     fontWeight: FontWeight.bold,
                                     letterSpacing: 4,
                                   ),
@@ -133,12 +130,16 @@ class _ViewTodoPageState extends State<ViewTodoPage> {
                                         fontSize: 20,
                                         color: edit
                                             ? Colors.amber
-                                            : Color(0xff28FEAF),
+                                            : const Color(0xff28FEAF),
                                         fontWeight: FontWeight.bold,
                                       ),
                                     ),
                                     edit
                                     ? Theme(
+                                        data: ThemeData(
+                                          primarySwatch: Colors.blue,
+                                          unselectedWidgetColor: const Color(0xff5e616a),
+                                        ),
                                         child: Transform.scale(
                                           scale: 1.5,
                                           child: Checkbox(
@@ -154,10 +155,6 @@ class _ViewTodoPageState extends State<ViewTodoPage> {
                                               });
                                             },
                                           ),
-                                        ),
-                                        data: ThemeData(
-                                          primarySwatch: Colors.blue,
-                                          unselectedWidgetColor: Color(0xff5e616a),
                                         )
                                     )
                                     : Container()
@@ -165,8 +162,8 @@ class _ViewTodoPageState extends State<ViewTodoPage> {
                                 )
                               ],
                             ),
-                            SizedBox(height: 8),
-                            Text(
+                            const SizedBox(height: 8),
+                            const Text(
                               "Todo",
                               style: TextStyle(
                                 fontSize: 33,
@@ -175,42 +172,41 @@ class _ViewTodoPageState extends State<ViewTodoPage> {
                                 letterSpacing: 4,
                               ),
                             ),
-                            SizedBox(height: 25),
-                            label("Task Title"),
-                            SizedBox(height: 12),
-                            title(),
-                            SizedBox(height: 30),
-                            label("Category"),
-                            SizedBox(height: 12),
+                            const SizedBox(height: 25),
+                            const LabelTextBox(label: "Task Title"),
+                            const SizedBox(height: 12),
+                            titleTextBox(),
+                            const SizedBox(height: 30),
+                            const LabelTextBox(label: "Category"),
+                            const SizedBox(height: 12),
                             Wrap(
                               runSpacing: 10,
                               children: [
                                 categorySelect("1. Important & urgent", 0xff595A5C),
-                                SizedBox(width: 20),
+                                const SizedBox(width: 20),
                                 categorySelect("2. Important but not urgent", 0xff595A5C),
-                                SizedBox(width: 20),
+                                const SizedBox(width: 20),
                                 categorySelect("3. Urgent but not important", 0xff595A5C),
-                                SizedBox(width: 20),
+                                const SizedBox(width: 20),
                                 categorySelect("4. Not urgent & not important", 0xff595A5C),
                               ],
                             ),
-                            SizedBox(height: 30),
-                            label("Time"),
-                            SizedBox(height: 12),
+                            const SizedBox(height: 30),
+                            const LabelTextBox(label: "Time"),
+                            const SizedBox(height: 12),
                             Row(
                               mainAxisAlignment: MainAxisAlignment.start,
                               children: [
                                 Container(
-                                  margin: EdgeInsets.only(right: 20),
+                                  margin: const EdgeInsets.only(right: 20),
                                   child: Text(
                                     _timeOfDay == TimeOfDay.now()
                                         ? widget.document!["time"]
-                                      : _timeOfDay.hour.toString().padLeft(2, '0') + ':' +
-                                        _timeOfDay.minute.toString().padLeft(2, '0'),
+                                      : '${_timeOfDay.hour.toString().padLeft(2, '0')}:${_timeOfDay.minute.toString().padLeft(2, '0')}',
                                     style: TextStyle(
                                       fontSize: 20,
                                       color: !edit
-                                          ? Color(0xff28FEAF)
+                                          ? const Color(0xff28FEAF)
                                           : Colors.amber,
                                       fontWeight: FontWeight.bold,
                                     ),
@@ -222,7 +218,7 @@ class _ViewTodoPageState extends State<ViewTodoPage> {
                                     minWidth: 50,
                                     color: Colors.amber,
                                     shape:  RoundedRectangleBorder(borderRadius: BorderRadius.circular(10.0),),
-                                    child: Icon(
+                                    child: const Icon(
                                       Icons.alarm,
                                       size: 32,
                                       color: Colors.black,
@@ -234,13 +230,13 @@ class _ViewTodoPageState extends State<ViewTodoPage> {
                                 : Container(),
                               ],
                             ),
-                            SizedBox(height: 30),
-                            label("Description"),
-                            SizedBox(height: 12),
-                            description(),
-                            SizedBox(height: 50),
-                            edit ? button() : Container(),
-                            SizedBox(height: 30)
+                            const SizedBox(height: 30),
+                            const LabelTextBox(label: "Description (Optional)"),
+                            const SizedBox(height: 12),
+                            descriptionTextBox(),
+                            const SizedBox(height: 50),
+                            edit ? buttonUpdate() : Container(),
+                            const SizedBox(height: 30)
                           ],
                         )
                     )
@@ -251,18 +247,18 @@ class _ViewTodoPageState extends State<ViewTodoPage> {
     );
   }
 
-  Widget title() {
+  Widget titleTextBox() {
     return Container(
       height: 55,
       width: MediaQuery.of(context).size.width,
       decoration: BoxDecoration(
-        color: Color(0xff2a2e3d),
+        color: const Color(0xff2a2e3d),
         borderRadius: BorderRadius.circular(15),
       ),
       child: TextFormField(
         controller: _titleController,
         enabled: edit,
-        style: TextStyle(
+        style: const TextStyle(
           color: Colors.white,
           fontSize: 17,
         ),
@@ -271,27 +267,15 @@ class _ViewTodoPageState extends State<ViewTodoPage> {
           hintText: edit
             ? "Enter Title"
             : "",
-          hintStyle: TextStyle(
+          hintStyle: const TextStyle(
             color: Colors.grey,
             fontSize: 17,
           ),
-          contentPadding: EdgeInsets.only(
+          contentPadding: const EdgeInsets.only(
             left: 20,
             right: 20,
           ),
         ),
-      ),
-    );
-  }
-
-  Widget label(String label) {
-    return Text(
-      label,
-      style: TextStyle(
-        color: Colors.white,
-        fontWeight: FontWeight.w600,
-        fontSize: 16.5,
-        letterSpacing: 0.2,
       ),
     );
   }
@@ -307,7 +291,7 @@ class _ViewTodoPageState extends State<ViewTodoPage> {
       : null,
       child: Chip(
         backgroundColor: !edit ? category == label
-            ? Color(0xff28FEAF)
+            ? const Color(0xff28FEAF)
             : Color(color)
         : category == label
             ? Colors.amber
@@ -323,23 +307,23 @@ class _ViewTodoPageState extends State<ViewTodoPage> {
             fontWeight: FontWeight.w600,
           ),
         ),
-        labelPadding: EdgeInsets.symmetric(horizontal: 17, vertical: 3.8),
+        labelPadding: const EdgeInsets.symmetric(horizontal: 17, vertical: 3.8),
       ),
     );
   }
 
-  Widget description() {
+  Widget descriptionTextBox() {
     return Container(
       height: 150,
       width: MediaQuery.of(context).size.width,
       decoration: BoxDecoration(
-        color: Color(0xff2a2e3d),
+        color: const Color(0xff2a2e3d),
         borderRadius: BorderRadius.circular(15),
       ),
       child: TextFormField(
         controller: _descController,
         enabled: edit,
-        style: TextStyle(
+        style: const TextStyle(
           color: Colors.white,
           fontSize: 17,
         ),
@@ -349,11 +333,11 @@ class _ViewTodoPageState extends State<ViewTodoPage> {
           hintText: edit
               ? "Enter Description"
               : "",
-          hintStyle: TextStyle(
+          hintStyle: const TextStyle(
             color: Colors.grey,
             fontSize: 17,
           ),
-          contentPadding: EdgeInsets.only(
+          contentPadding: const EdgeInsets.only(
             left: 20,
             right: 20,
           ),
@@ -362,19 +346,18 @@ class _ViewTodoPageState extends State<ViewTodoPage> {
     );
   }
 
-  Widget button() {
+  Widget buttonUpdate() {
     return InkWell(
       onTap: () {
         FirebaseFirestore.instance.collection("Todo").doc(widget.id).update({
           "title": _titleController?.text,
           "checklist": checklist,
           "category": category,
-          "time": _timeOfDay.hour.toString().padLeft(2, '0') + ':' +
-              _timeOfDay.minute.toString().padLeft(2, '0'),
+          "time": '${_timeOfDay.hour.toString().padLeft(2, '0')}:${_timeOfDay.minute.toString().padLeft(2, '0')}',
           "description": _descController?.text,
         });
         Navigator.pop(context);
-        final snackBar = SnackBar(content: Text("update todo successful"), backgroundColor: Colors.green);
+        const snackBar = SnackBar(content: Text("update todo successful"), backgroundColor: Colors.green);
         ScaffoldMessenger.of(context).showSnackBar(snackBar);
       },
       child: Container(
@@ -384,7 +367,7 @@ class _ViewTodoPageState extends State<ViewTodoPage> {
             borderRadius: BorderRadius.circular(20),
             color: Colors.amber,
           ),
-          child: Center(
+          child: const Center(
               child: Text(
                   "Update Todo",
                   style: TextStyle(
@@ -399,13 +382,13 @@ class _ViewTodoPageState extends State<ViewTodoPage> {
   }
 
   Future<void> selectTime() async {
-    TimeOfDay ? _picked = await showTimePicker(
+    TimeOfDay ? picked = await showTimePicker(
         context: context,
         initialTime: _timeOfDay
     );
-    if(_picked != null){
+    if(picked != null){
       setState(() {
-        _timeOfDay = _picked;
+        _timeOfDay = picked;
       });
     }
   }

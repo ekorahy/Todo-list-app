@@ -17,7 +17,7 @@ class HomePage extends StatefulWidget {
 class _HomePageState extends State<HomePage> {
   AuthClass authClass = AuthClass();
   final Stream<QuerySnapshot> _stream =
-  FirebaseFirestore.instance.collection("Todo").orderBy("category").snapshots();
+  FirebaseFirestore.instance.collection("Todo").orderBy("time").snapshots();
 
   @override
   Widget build(BuildContext context) {
@@ -25,7 +25,7 @@ class _HomePageState extends State<HomePage> {
         backgroundColor: Colors.black,
         appBar: AppBar(
           backgroundColor: Colors.black,
-          title: Text(
+          title: const Text(
             "Todo List App",
             style: TextStyle(
               fontSize: 34,
@@ -35,19 +35,20 @@ class _HomePageState extends State<HomePage> {
           ),
           actions: [
             IconButton(
-                icon: Icon(Icons.logout),
+                icon: const Icon(Icons.logout),
                 color: Colors.red,
                 onPressed: () async {
                   await authClass.logout();
                   Navigator.pushAndRemoveUntil(
                       context,
-                      MaterialPageRoute(builder: (builder) => SignInPage()), (
+                      MaterialPageRoute(builder: (builder) => const SignInPage()), (
                       route) => false);
-                  final snackBar = SnackBar(content: Text("logout successful"), backgroundColor: Colors.green);
+                  const snackBar = SnackBar(content: Text("logout successful"), backgroundColor: Colors.green);
                   ScaffoldMessenger.of(context).showSnackBar(snackBar);
                 }),
           ],
-          bottom: PreferredSize(
+          bottom: const PreferredSize(
+            preferredSize: Size.fromHeight(35),
             child: Align(
                 alignment: Alignment.centerLeft,
                 child: Padding(
@@ -64,7 +65,6 @@ class _HomePageState extends State<HomePage> {
                   ),
                 )
             ),
-            preferredSize: Size.fromHeight(35),
           ),
         ),
         bottomNavigationBar: BottomNavigationBar(
@@ -74,10 +74,10 @@ class _HomePageState extends State<HomePage> {
                 icon: InkWell(
                   onTap: () {
                     Navigator.pushAndRemoveUntil(context,
-                        MaterialPageRoute(builder: (builder) => HomePage()), (
+                        MaterialPageRoute(builder: (builder) => const HomePage()), (
                             route) => false);
                   },
-                  child: Icon(
+                  child: const Icon(
                     Icons.home,
                     size: 32,
                     color: Colors.white,
@@ -89,16 +89,16 @@ class _HomePageState extends State<HomePage> {
                 icon: InkWell(
                   onTap: () {
                     Navigator.push(context,
-                        MaterialPageRoute(builder: (builder) => AddTodoPage()));
+                        MaterialPageRoute(builder: (builder) => const AddTodoPage()));
                   },
                   child: Container(
                     height: 52,
                     width: 52,
-                    decoration: BoxDecoration(
+                    decoration: const BoxDecoration(
                       shape: BoxShape.circle,
                       color: Color(0xff28FEAF),
                     ),
-                    child: Icon(
+                    child: const Icon(
                       Icons.add,
                       size: 32,
                       color: Colors.black,
@@ -111,9 +111,9 @@ class _HomePageState extends State<HomePage> {
                 icon: InkWell(
                   onTap: () {
                     Navigator.push(context,
-                        MaterialPageRoute(builder: (builder) => AboutPage()));
+                        MaterialPageRoute(builder: (builder) => const AboutPage()));
                   },
-                  child: Icon(
+                  child: const Icon(
                     Icons.account_box_outlined,
                     size: 32,
                     color: Colors.white,
@@ -124,8 +124,8 @@ class _HomePageState extends State<HomePage> {
             ]
         ),
         body: Container(
-          margin: EdgeInsets.only(top: 20),
-          padding: EdgeInsets.only(
+          margin: const EdgeInsets.only(top: 20),
+          padding: const EdgeInsets.only(
             left: 10,
             right: 10,
           ),
@@ -133,76 +133,86 @@ class _HomePageState extends State<HomePage> {
             stream: _stream,
             builder: (context, snapshot) {
               if (!snapshot.hasData) {
-                return Center(
+                return const Center(
                   child: CircularProgressIndicator(),
                 );
               }
-              return ListView.builder(
-                  itemCount: snapshot.data?.docs.length,
-                  itemBuilder: (context, index) {
-                    Color? textColor;
-                    Color? bgColor;
-                    Map<String, dynamic> document =
-                    snapshot.data?.docs[index].data() as Map<String, dynamic>;
-                    switch (document["category"]) {
-                      case "1. Important & urgent":
-                        textColor = Colors.white;
-                        bgColor = Colors.red;
-                        break;
-                      case "2. Important but not urgent":
-                        textColor = Colors.black;
-                        bgColor = Colors.amber;
-                        break;
-                      case "3. Urgent but not important":
-                        textColor = Colors.white;
-                        bgColor = Colors.blue;
-                        break;
-                      case "4. Not urgent & not important":
-                        textColor = Colors.black;
-                        bgColor = Color(0xff28FEAF);
-                        break;
-                      default:
-                        textColor = Colors.white;
-                        bgColor = Colors.red;
-                    }
-                    return InkWell(
-                      onTap: () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (builder) =>
-                                ViewTodoPage(
-                                  document: document,
-                                  id: snapshot.data?.docs[index].id,
-                                ),
-                          ),
-                        );
-                      },
-                      child: TodoCard(
-                        title: document["title"] == null
-                            ? "Hey There"
-                            : document["title"],
-                        category: document["category"],
-                        check: document["checklist"],
-                        bgColor: bgColor,
-                        textColor: textColor,
-                        time: document["time"],
-                        index: index,
-                        onChangeCheckValue: () {
-                          document["checklist"] == false ?
-                          FirebaseFirestore.instance.collection("Todo").doc(
-                              snapshot.data?.docs[index].id).update({
-                            "checklist": true
-                          })
-                          :
-                          FirebaseFirestore.instance.collection("Todo").doc(
-                              snapshot.data?.docs[index].id).update({
-                            "checklist": false
-                          });
+              if(snapshot.data!.docs.isEmpty) {
+               return const Center(
+                 child: Text(
+                   "Empty Todo",
+                   style: TextStyle(
+                     color: Colors.red,
+                     fontSize: 20,
+                   ),
+                 ),
+               );
+              } else {
+                return ListView.builder(
+                    itemCount: snapshot.data?.docs.length,
+                    itemBuilder: (context, index) {
+                      Color? textColor;
+                      Color? bgColor;
+                      Map<String, dynamic> document =
+                      snapshot.data?.docs[index].data() as Map<String, dynamic>;
+                      switch (document["category"]) {
+                        case "1. Important & urgent":
+                          textColor = Colors.white;
+                          bgColor = Colors.red;
+                          break;
+                        case "2. Important but not urgent":
+                          textColor = Colors.black;
+                          bgColor = Colors.amber;
+                          break;
+                        case "3. Urgent but not important":
+                          textColor = Colors.white;
+                          bgColor = Colors.blue;
+                          break;
+                        case "4. Not urgent & not important":
+                          textColor = Colors.black;
+                          bgColor = const Color(0xff28FEAF);
+                          break;
+                        default:
+                          textColor = Colors.white;
+                          bgColor = Colors.red;
+                      }
+                      return InkWell(
+                        onTap: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (builder) =>
+                                  ViewTodoPage(
+                                    document: document,
+                                    id: snapshot.data?.docs[index].id,
+                                  ),
+                            ),
+                          );
                         },
-                      ),
-                    );
-                  });
+                        child: TodoCard(
+                          title: document["title"] ?? "Hey There",
+                          category: document["category"],
+                          check: document["checklist"],
+                          bgColor: bgColor,
+                          textColor: textColor,
+                          time: document["time"],
+                          index: index,
+                          onChangeCheckValue: () {
+                            document["checklist"] == false ?
+                            FirebaseFirestore.instance.collection("Todo").doc(
+                                snapshot.data?.docs[index].id).update({
+                              "checklist": true
+                            })
+                                :
+                            FirebaseFirestore.instance.collection("Todo").doc(
+                                snapshot.data?.docs[index].id).update({
+                              "checklist": false
+                            });
+                          },
+                        ),
+                      );
+                    });
+              }
             },
           ),
         )
